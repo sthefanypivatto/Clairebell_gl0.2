@@ -1,1 +1,1557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#26091f">
+<title>Clairebell GL — Interactive Romance</title>
 
+<style>
+:root {
+  --bg: #170713;
+  --wine: #4b123b;
+  --pink: #ff69b4;
+  --light: #ffe5f2;
+  --gold: #ffd783;
+  --glass: rgba(35, 10, 30, .82);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: white;
+  font-family: system-ui, Arial, sans-serif;
+  min-height: 100vh;
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.hidden {
+  display: none !important;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  background: rgba(23, 7, 19, .96);
+  border-bottom: 1px solid #7c315e;
+  backdrop-filter: blur(12px);
+}
+
+.logo {
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: var(--light);
+}
+
+.logo span {
+  color: var(--pink);
+}
+
+.gem-counter {
+  border: 1px solid #bd6eab;
+  border-radius: 30px;
+  padding: 7px 12px;
+  background: #43152f;
+  color: var(--gold);
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+nav {
+  display: flex;
+  gap: 7px;
+  padding: 10px;
+  overflow-x: auto;
+  background: #230b20;
+  border-bottom: 1px solid #4d2044;
+}
+
+nav button {
+  flex: 1;
+  min-width: 92px;
+  border: 1px solid #68345d;
+  color: white;
+  background: #35112f;
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+
+nav button.active {
+  background: linear-gradient(135deg, #e84e9b, #7d245f);
+  border-color: #ffb7dc;
+}
+
+main {
+  width: min(1100px, 100%);
+  margin: auto;
+  padding: 18px;
+}
+
+.panel {
+  background: linear-gradient(145deg, #32102b, #1f0a1c);
+  border: 1px solid #69345e;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 12px 40px #0004;
+}
+
+h1, h2, h3, p {
+  overflow-wrap: anywhere;
+}
+
+h1 {
+  font-size: clamp(26px, 5vw, 46px);
+  margin: 10px 0;
+}
+
+h2 {
+  color: #ffc4e4;
+}
+
+.subtitle {
+  color: #e9bfdc;
+  line-height: 1.7;
+}
+
+.hero {
+  text-align: center;
+  padding: 35px 15px;
+  background:
+    radial-gradient(ellipse at 50% 0%, #a62d78 0%, transparent 55%),
+    linear-gradient(160deg, #3d1238, #160714 80%);
+}
+
+.badge {
+  display: inline-block;
+  border: 1px solid #e77bb9;
+  color: #ffd4ed;
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+.primary, .secondary, .vip, .danger {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  color: white;
+  font-weight: 700;
+  transition: transform .15s, filter .15s;
+}
+
+.primary {
+  background: linear-gradient(135deg, #ff72b9, #b82b7e);
+}
+
+.secondary {
+  background: #48203f;
+  border-color: #985783;
+}
+
+.vip {
+  background: linear-gradient(135deg, #997025, #684018);
+  border-color: var(--gold);
+  color: #fff0bd;
+}
+
+.danger {
+  background: #762b43;
+  border-color: #c75b78;
+}
+
+.primary:active, .secondary:active, .vip:active {
+  transform: scale(.97);
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  padding: 15px;
+  background: #2b1028;
+  border: 1px solid #613057;
+  border-radius: 16px;
+}
+
+.card.selected {
+  border: 2px solid var(--pink);
+  box-shadow: 0 0 20px #ff69b444;
+}
+
+.character-avatar {
+  display: grid;
+  place-items: center;
+  min-height: 135px;
+  font-size: 72px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  background:
+    radial-gradient(circle at 50% 35%, #8c386f, transparent 65%),
+    linear-gradient(135deg, #512347, #201024);
+}
+
+.small {
+  color: #d8b9d2;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.story-stage {
+  position: relative;
+  overflow: hidden;
+  min-height: 390px;
+  border-radius: 20px;
+  border: 1px solid #a4548c;
+  background:
+    radial-gradient(ellipse at 50% 28%, #f7a3d3 0%, transparent 20%),
+    linear-gradient(180deg, #6e3676, #281633 52%, #100b19);
+  perspective: 900px;
+  isolation: isolate;
+}
+
+.story-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 20% 20%, #fff8 0 1px, transparent 2px),
+    radial-gradient(circle at 75% 25%, #fff9 0 2px, transparent 3px),
+    radial-gradient(circle at 60% 12%, #fff8 0 1px, transparent 2px);
+  background-size: 100px 90px, 130px 100px, 80px 80px;
+}
+
+.stage-title {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  right: 14px;
+  text-align: center;
+  text-shadow: 0 2px 8px #000;
+  z-index: 3;
+}
+
+.stage-ground {
+  position: absolute;
+  bottom: 0;
+  height: 27%;
+  width: 100%;
+  background: linear-gradient(#412344, #170c20);
+  transform: rotateX(15deg) scale(1.1);
+  transform-origin: bottom;
+}
+
+.character-figure {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 235px;
+  transform-style: preserve-3d;
+  transition: left .35s ease, transform .35s ease;
+  filter: drop-shadow(0 10px 18px #0008);
+}
+
+.character-head {
+  position: absolute;
+  top: 0;
+  left: 35px;
+  width: 70px;
+  height: 82px;
+  display: grid;
+  place-items: center;
+  font-size: 55px;
+  border-radius: 48% 48% 43% 43%;
+  background: linear-gradient(140deg, #ffe4ed, #dca3c7);
+  border: 2px solid #fbd8eb;
+  box-shadow: inset -8px -5px 0 #a9568555;
+}
+
+.character-body {
+  position: absolute;
+  top: 73px;
+  left: 17px;
+  width: 106px;
+  height: 137px;
+  border-radius: 35px 35px 12px 12px;
+  background: linear-gradient(120deg, #ff8ac8, #822b70 75%);
+  border: 2px solid #ffcae6;
+  box-shadow: inset -12px 0 15px #210b24;
+}
+
+.character-body::before,
+.character-body::after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  width: 24px;
+  height: 95px;
+  border-radius: 15px;
+  background: linear-gradient(90deg, #e9b8d7, #a9639b);
+}
+
+.character-body::before {
+  left: -17px;
+  transform: rotate(12deg);
+}
+
+.character-body::after {
+  right: -17px;
+  transform: rotate(-12deg);
+}
+
+.character-figure.walking {
+  animation: walk .38s infinite alternate ease-in-out;
+}
+
+@keyframes walk {
+  from { margin-bottom: 0; }
+  to { margin-bottom: 9px; }
+}
+
+.character-figure.sway {
+  animation: sway 3s infinite ease-in-out;
+}
+
+@keyframes sway {
+  0%, 100% { rotate: -2deg; }
+  50% { rotate: 2deg; }
+}
+
+.dialogue-box {
+  position: relative;
+  margin-top: -25px;
+  z-index: 4;
+  padding: 18px;
+  border: 1px solid #b35492;
+  background: var(--glass);
+  border-radius: 18px;
+  backdrop-filter: blur(12px);
+}
+
+.speaker {
+  color: #ff9fd2;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.dialogue {
+  min-height: 55px;
+  line-height: 1.7;
+}
+
+.choices {
+  display: grid;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.choice {
+  text-align: left;
+  color: white;
+  padding: 13px;
+  border-radius: 12px;
+  border: 1px solid #a4538a;
+  background: #451c3d;
+}
+
+.choice:hover {
+  background: #71305d;
+}
+
+.meter {
+  height: 8px;
+  border-radius: 20px;
+  background: #180d1a;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.meter span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #ff71bb, #ffd783);
+  transition: width .3s;
+}
+
+.task {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.task button {
+  margin-top: auto;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #895078;
+  border-radius: 10px;
+  color: white;
+  background: #1c0a19;
+  margin: 6px 0 12px;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.notice {
+  padding: 12px;
+  background: #35162f;
+  border-left: 3px solid var(--pink);
+  border-radius: 8px;
+  line-height: 1.6;
+  color: #f5d5eb;
+}
+
+footer {
+  text-align: center;
+  padding: 25px 12px;
+  color: #b994b0;
+  font-size: 12px;
+}
+
+@media (min-width: 800px) {
+  .game-layout {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 18px;
+    align-items: start;
+  }
+}
+
+@media (max-width: 420px) {
+  main {
+    padding: 10px;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+
+  .story-stage {
+    min-height: 350px;
+  }
+
+  .character-figure {
+    scale: .88;
+    transform: translateX(-50%);
+    transform-origin: bottom center;
+  }
+
+  nav button {
+    min-width: 85px;
+    padding: 9px;
+    font-size: 12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">♡ CLAIREBELL <span>GL</span></div>
+  <div class="gem-counter">💎 <span id="gemCount">120</span></div>
+</header>
+
+<nav>
+  <button class="active" data-tab="home">🏰 Início</button>
+  <button data-tab="game">🎭 Jogar</button>
+  <button data-tab="characters">👑 Personagens</button>
+  <button data-tab="missions">✨ Missões</button>
+  <button data-tab="library">📚 Histórias</button>
+  <button data-tab="store">💎 Loja VIP</button>
+</nav>
+
+<main>
+
+<!-- INÍCIO -->
+
+<section id="home" class="tab">
+  <div class="panel hero">
+    <span class="badge">INTERACTIVE ROMANCE</span>
+    <h1>Seu destino.<br>Sua história. 💗</h1>
+    <p class="subtitle">
+      Entre em um universo de romances, segredos e escolhas.
+      Cada decisão pode mudar o futuro.
+    </p>
+    <div class="button-row" style="justify-content:center">
+      <button class="primary" onclick="startGame()">Começar aventura ✨</button>
+      <button class="secondary" onclick="resumeGame()">Continuar história</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <article class="card">
+      <div class="character-avatar">🌹</div>
+      <h3>Histórias vivas</h3>
+      <p class="small">Escolha falas, construa relações e descubra finais.</p>
+    </article>
+
+    <article class="card">
+      <div class="character-avatar">👑</div>
+      <h3>Seu próprio destino</h3>
+      <p class="small">Escolha a protagonista e defina sua personalidade.</p>
+    </article>
+
+    <article class="card">
+      <div class="character-avatar">💎</div>
+      <h3>Recompensas</h3>
+      <p class="small">Complete desafios demonstrativos e desbloqueie opções especiais.</p>
+    </article>
+  </div>
+
+  <div class="panel">
+    <h2>🌙 Sua aventura</h2>
+    <p id="homeProgress" class="subtitle">
+      Você ainda não começou uma história.
+    </p>
+    <div class="meter"><span id="progressBar" style="width:0%"></span></div>
+  </div>
+</section>
+
+<!-- JOGO -->
+
+<section id="game" class="tab hidden">
+  <div class="panel">
+    <h2>🎭 Sua história interativa</h2>
+    <p class="small">
+      Demonstração com cenário em perspectiva, personagem animado
+      e escolhas narrativas.
+    </p>
+  </div>
+
+  <div class="game-layout">
+    <div>
+      <div class="story-stage" id="stage">
+        <div class="stage-title" id="sceneTitle">O baile das rosas</div>
+        <div class="stage-ground"></div>
+
+        <div class="character-figure sway" id="figure">
+          <div class="character-head" id="figureHead">👩🏻</div>
+          <div class="character-body" id="figureBody"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>🕹️ Movimentação</h3>
+        <p class="small">Experimente deslocar a personagem no cenário.</p>
+        <div class="button-row">
+          <button class="secondary" onclick="moveCharacter(-10)">⬅ Esquerda</button>
+          <button class="secondary" onclick="moveCharacter(10)">Direita ➡</button>
+          <button class="secondary" onclick="moveCharacter(0,true)">↺ Centro</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="dialogue-box">
+        <div class="speaker" id="speaker">Narradora</div>
+        <div class="dialogue" id="dialogue">
+          Uma noite misteriosa está prestes a mudar tudo.
+        </div>
+        <div class="choices" id="choices"></div>
+      </div>
+
+      <div class="panel">
+        <h3>💕 Afinidade</h3>
+        <div class="small">Conexão romântica</div>
+        <div class="meter"><span id="affinityBar" style="width:10%"></span></div>
+        <div id="affinityText" class="small">10% de afinidade</div>
+
+        <div class="button-row">
+          <button class="secondary" onclick="saveGame()">💾 Salvar agora</button>
+          <button class="secondary" onclick="newAdventure()">🔄 Reiniciar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERSONAGENS -->
+
+<section id="characters" class="tab hidden">
+  <div class="panel">
+    <h2>👑 Escolha quem você quer ser</h2>
+    <p class="subtitle">
+      Selecione uma protagonista para começar sua aventura.
+      Os personagens abaixo são originais desta demonstração.
+    </p>
+    <div class="grid" id="characterGrid"></div>
+  </div>
+</section>
+
+<!-- MISSÕES -->
+
+<section id="missions" class="tab hidden">
+  <div class="panel">
+    <h2>✨ Central de missões</h2>
+    <p class="subtitle">
+      Complete tarefas para ganhar gemas demonstrativas.
+      Cada missão só pode ser resgatada uma vez neste protótipo.
+    </p>
+
+    <div class="notice">
+      Os botões de recompensa servem apenas para testar o jogo.
+      Não há anúncios reais, pagamentos ou verificação de visitas.
+    </div>
+  </div>
+
+  <div class="grid" id="missionGrid"></div>
+</section>
+
+<!-- BIBLIOTECA -->
+
+<section id="library" class="tab hidden">
+  <div class="panel">
+    <h2>📚 Biblioteca de histórias</h2>
+    <p class="subtitle">Continue uma aventura ou crie outra.</p>
+
+    <h3>✍️ Criar nova história</h3>
+
+    <label for="storyName">Nome da aventura</label>
+    <input id="storyName" maxlength="60" placeholder="Ex.: O segredo da lua rosa">
+
+    <label for="storyDescription">Descrição</label>
+    <textarea id="storyDescription" maxlength="500"
+      placeholder="Descreva o mundo, os personagens e o começo da história..."></textarea>
+
+    <button class="primary" onclick="createStory()">＋ Criar história</button>
+  </div>
+
+  <div class="panel">
+    <h2>📖 Minhas histórias</h2>
+    <div id="storyLibrary" class="grid"></div>
+  </div>
+</section>
+
+<!-- LOJA -->
+
+<section id="store" class="tab hidden">
+  <div class="panel hero">
+    <span class="badge">CLUB CLAIREBELL</span>
+    <h1>✨ Loja VIP</h1>
+    <p class="subtitle">
+      Desbloqueie escolhas especiais usando as gemas
+      fictícias desta demonstração.
+    </p>
+    <h2>💎 Saldo: <span id="storeGems">120</span></h2>
+  </div>
+
+  <div class="grid">
+    <article class="card">
+      <div class="character-avatar">💌</div>
+      <h3>Confissão secreta</h3>
+      <p class="small">Uma conversa especial com a personagem escolhida.</p>
+      <p>💎 30 gemas</p>
+      <button class="vip" onclick="buyItem('confession',30)">Desbloquear</button>
+    </article>
+
+    <article class="card">
+      <div class="character-avatar">🌹</div>
+      <h3>Encontro exclusivo</h3>
+      <p class="small">Uma cena romântica alternativa.</p>
+      <p>💎 50 gemas</p>
+      <button class="vip" onclick="buyItem('date',50)">Desbloquear</button>
+    </article>
+
+    <article class="card">
+      <div class="character-avatar">👑</div>
+      <h3>Final especial</h3>
+      <p class="small">Desbloqueie uma cena extra de encerramento.</p>
+      <p>💎 80 gemas</p>
+      <button class="vip" onclick="buyItem('ending',80)">Desbloquear</button>
+    </article>
+  </div>
+
+  <div class="panel">
+    <h2>💳 Comprar gemas</h2>
+    <p class="subtitle">
+      A compra com dinheiro real não está habilitada nesta versão.
+    </p>
+    <div class="grid">
+      <button class="secondary" onclick="demoGems(50)">Pacote teste: 50 gemas</button>
+      <button class="secondary" onclick="demoGems(150)">Pacote teste: 150 gemas</button>
+      <button class="secondary" onclick="demoGems(500)">Pacote teste: 500 gemas</button>
+    </div>
+    <p class="small">
+      Estes botões adicionam gemas fictícias e não realizam cobranças.
+    </p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  CLAIREBELL GL · Protótipo demonstrativo · Versão 1.0
+</footer>
+
+<script>
+"use strict";
+
+/* ==========================================
+   CLAIREBELL GL
+   Protótipo independente de histórias
+   ========================================== */
+
+const SAVE_KEY = "clairebell_gl_demo_v1";
+
+const characters = [
+  {
+    id: "luna",
+    name: "Luna",
+    emoji: "👩🏻",
+    color: "#e45ba6",
+    personality: "Doce, curiosa e romântica.",
+    description: "Uma jovem que acredita nos encontros destinados."
+  },
+  {
+    id: "akari",
+    name: "Akari",
+    emoji: "👩🏽",
+    color: "#b84d89",
+    personality: "Corajosa, intensa e independente.",
+    description: "Uma aventureira que não teme mudar o próprio destino."
+  },
+  {
+    id: "yumi",
+    name: "Yumi",
+    emoji: "👩🏼",
+    color: "#9655cc",
+    personality: "Misteriosa, elegante e observadora.",
+    description: "Uma personagem cheia de segredos e histórias."
+  },
+  {
+    id: "mika",
+    name: "Mika",
+    emoji: "👩🏿",
+    color: "#c85e7c",
+    personality: "Divertida, leal e espontânea.",
+    description: "Uma amiga que transforma qualquer noite em aventura."
+  }
+];
+
+const defaultState = () => ({
+  gems: 120,
+  selectedCharacter: "luna",
+  affinity: 10,
+  scene: 0,
+  scenePosition: 50,
+  currentStoryId: "main",
+  missionsClaimed: [],
+  unlocked: [],
+  stories: [
+    {
+      id: "main",
+      name: "O Baile das Rosas",
+      description: "Uma noite misteriosa, um encontro inesperado.",
+      type: "official",
+      scene: 0,
+      affinity: 10,
+      position: 50
+    }
+  ],
+  lastNotice: ""
+});
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return defaultState();
+
+    const saved = JSON.parse(raw);
+    const base = defaultState();
+
+    return {
+      ...base,
+      ...saved,
+      stories: Array.isArray(saved.stories) && saved.stories.length
+        ? saved.stories
+        : base.stories,
+      missionsClaimed: Array.isArray(saved.missionsClaimed)
+        ? saved.missionsClaimed : [],
+      unlocked: Array.isArray(saved.unlocked)
+        ? saved.unlocked : []
+    };
+  } catch (error) {
+    console.warn("Não foi possível carregar o progresso:", error);
+    return defaultState();
+  }
+}
+
+function persist() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    updateCounters();
+    updateHomeProgress();
+  } catch (error) {
+    console.error("Falha ao salvar:", error);
+    alert("Não foi possível salvar. Verifique o espaço disponível no navegador.");
+  }
+}
+
+function activeStory() {
+  return state.stories.find(s => s.id === state.currentStoryId)
+    || state.stories[0];
+}
+
+function selectedCharacter() {
+  return characters.find(c => c.id === state.selectedCharacter)
+    || characters[0];
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[char]);
+}
+
+function updateCounters() {
+  document.getElementById("gemCount").textContent = state.gems;
+  document.getElementById("storeGems").textContent = state.gems;
+  document.getElementById("affinityBar").style.width =
+    Math.max(0, Math.min(100, state.affinity)) + "%";
+  document.getElementById("affinityText").textContent =
+    state.affinity + "% de afinidade";
+}
+
+function updateHomeProgress() {
+  const story = activeStory();
+  const text = document.getElementById("homeProgress");
+  const bar = document.getElementById("progressBar");
+
+  if (!story) return;
+
+  text.textContent = story.name + " · Cena " + (story.scene + 1);
+  bar.style.width = Math.min(100, (story.scene + 1) * 20) + "%";
+}
+
+/* NAVEGAÇÃO */
+
+document.querySelectorAll("nav button").forEach(button => {
+  button.addEventListener("click", () => showTab(button.dataset.tab));
+});
+
+function showTab(id) {
+  document.querySelectorAll(".tab").forEach(section => {
+    section.classList.toggle("hidden", section.id !== id);
+  });
+
+  document.querySelectorAll("nav button").forEach(button => {
+    button.classList.toggle("active", button.dataset.tab === id);
+  });
+
+  if (id === "characters") renderCharacters();
+  if (id === "missions") renderMissions();
+  if (id === "library") renderLibrary();
+  if (id === "game") renderScene();
+  if (id === "store") updateCounters();
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* PERSONAGENS */
+
+function renderCharacters() {
+  const grid = document.getElementById("characterGrid");
+
+  grid.innerHTML = characters.map(character => `
+    <article class="card ${
+      character.id === state.selectedCharacter ? "selected" : ""
+    }">
+      <div class="character-avatar"
+           style="background:linear-gradient(135deg,${character.color},#241025)">
+        ${character.emoji}
+      </div>
+      <h3>${escapeHTML(character.name)}</h3>
+      <p class="small">${escapeHTML(character.description)}</p>
+      <p class="small">${escapeHTML(character.personality)}</p>
+      <button class="primary" onclick="selectCharacter('${character.id}')">
+        ${character.id === state.selectedCharacter
+          ? "✓ Personagem escolhida"
+          : "Escolher personagem"}
+      </button>
+    </article>
+  `).join("");
+}
+
+function selectCharacter(id) {
+  if (!characters.some(c => c.id === id)) return;
+
+  state.selectedCharacter = id;
+  persist();
+  renderCharacters();
+  renderScene();
+
+  alert("Você escolheu " + selectedCharacter().name + "!");
+}
+
+function startGame() {
+  showTab("game");
+  renderScene();
+}
+
+function resumeGame() {
+  showTab("game");
+  renderScene();
+}
+
+/* HISTÓRIA E DIÁLOGOS */
+
+const scenes = [
+  {
+    title: "O Baile das Rosas",
+    speaker: "Narradora",
+    text: "As luzes do salão brilham. No meio da música, alguém misterioso olha diretamente para você.",
+    choices: [
+      {
+        text: "Sorrir e se aproximar.",
+        affinity: 10,
+        next: 1
+      },
+      {
+        text: "Esperar para descobrir quem é.",
+        affinity: 3,
+        next: 2
+      },
+      {
+        text: "Fazer uma pergunta misteriosa.",
+        affinity: 6,
+        next: 3
+      }
+    ]
+  },
+  {
+    title: "Um sorriso inesperado",
+    speaker: "A visitante",
+    text: "A visitante sorri. 'Eu esperava encontrar você esta noite. Posso saber seu nome?'",
+    choices: [
+      {
+        text: "Contar seu nome com um sorriso.",
+        affinity: 10,
+        next: 4
+      },
+      {
+        text: "Perguntar por que ela estava esperando.",
+        affinity: 6,
+        next: 3
+      }
+    ]
+  },
+  {
+    title: "O olhar secreto",
+    speaker: "A visitante",
+    text: "'Você gosta de observar antes de agir?', ela pergunta, com um sorriso curioso.",
+    choices: [
+      {
+        text: "Dizer que gosta de mistérios.",
+        affinity: 8,
+        next: 3
+      },
+      {
+        text: "Convidá-la para dançar.",
+        affinity: 10,
+        next: 4
+      }
+    ]
+  },
+  {
+    title: "A pergunta proibida",
+    speaker: "A visitante",
+    text: "'Talvez eu tenha um segredo que só você pode descobrir.' Ela estende a mão.",
+    choices: [
+      {
+        text: "Aceitar sua mão.",
+        affinity: 12,
+        next: 4
+      },
+      {
+        text: "Perguntar qual é o segredo.",
+        affinity: 8,
+        next: 5
+      },
+      {
+        text: "💎 Responder com uma confissão VIP — 30 gemas",
+        vip: "confession",
+        cost: 30,
+        affinity: 15,
+        next: 5
+      }
+    ]
+  },
+  {
+    title: "Dançando sob as estrelas",
+    speaker: "A visitante",
+    text: "'Acho que esta noite será inesquecível.' A música começa, e vocês se aproximam para dançar.",
+    choices: [
+      {
+        text: "Perguntar se vocês vão se encontrar novamente.",
+        affinity: 10,
+        next: 5
+      },
+      {
+        text: "Guardar este momento em silêncio.",
+        affinity: 5,
+        next: 5
+      }
+    ]
+  },
+  {
+    title: "O começo de algo novo",
+    speaker: "Narradora",
+    text: "A noite termina, mas uma nova história acaba de começar. O próximo encontro poderá revelar muito mais.",
+    choices: [
+      {
+        text: "Reviver a história desde o início.",
+        affinity: 0,
+        next: 0,
+        resetAffinity: true
+      },
+      {
+        text: "Continuar explorando este universo.",
+        affinity: 0,
+        next: 0
+      }
+    ]
+  }
+];
+
+function renderScene() {
+  const character = selectedCharacter();
+  const story = activeStory();
+
+  if (!story) return;
+
+  document.getElementById("figureHead").textContent = character.emoji;
+  document.getElementById("figureBody").style.background =
+    `linear-gradient(120deg, ${character.color}, #54204d 80%)`;
+
+  document.getElementById("figure").style.left =
+    Math.max(12, Math.min(88, story.position ?? state.scenePosition)) + "%";
+
+  if (story.type === "custom") {
+    renderCustomScene(story);
+    return;
+  }
+
+  const sceneIndex = Math.max(0, Math.min(scenes.length - 1, story.scene));
+  const scene = scenes[sceneIndex];
+
+  document.getElementById("sceneTitle").textContent = scene.title;
+  document.getElementById("speaker").textContent = scene.speaker;
+  document.getElementById("dialogue").textContent = scene.text;
+
+  const choices = document.getElementById("choices");
+
+  choices.innerHTML = scene.choices.map((choice, index) => {
+    const locked = choice.vip && !state.unlocked.includes(choice.vip);
+
+    return `
+      <button class="${choice.vip ? "choice vip" : "choice"}"
+        onclick="chooseOption(${index})">
+        ${escapeHTML(choice.text)}
+        ${locked ? " 🔒" : ""}
+      </button>
+    `;
+  }).join("");
+
+  state.scene = story.scene;
+  state.affinity = story.affinity;
+  state.scenePosition = story.position ?? 50;
+
+  updateCounters();
+  updateHomeProgress();
+}
+
+function chooseOption(index) {
+  const story = activeStory();
+  if (!story || story.type === "custom") return;
+
+  const scene = scenes[story.scene];
+  if (!scene || !scene.choices[index]) return;
+
+  const choice = scene.choices[index];
+
+  if (choice.vip && !state.unlocked.includes(choice.vip)) {
+    if (state.gems < choice.cost) {
+      alert("Você não tem gemas suficientes. Visite a área de missões!");
+      return;
+    }
+
+    if (!confirm("Desbloquear esta opção por " + choice.cost + " gemas?")) {
+      return;
+    }
+
+    state.gems -= choice.cost;
+    state.unlocked.push(choice.vip);
+  }
+
+  if (choice.resetAffinity) {
+    story.affinity = 10;
+  } else {
+    story.affinity = Math.max(0, Math.min(100,
+      story.affinity + (choice.affinity || 0)
+    ));
+  }
+
+  story.scene = choice.next;
+  state.scene = story.scene;
+  state.affinity = story.affinity;
+
+  persist();
+  renderScene();
+}
+
+function newAdventure() {
+  if (!confirm("Reiniciar esta história? O progresso salvo dela voltará ao começo.")) {
+    return;
+  }
+
+  const story = activeStory();
+
+  story.scene = 0;
+  story.affinity = 10;
+  story.position = 50;
+
+  state.scene = 0;
+  state.affinity = 10;
+  state.scenePosition = 50;
+
+  persist();
+  renderScene();
+}
+
+/* MOVIMENTAÇÃO DEMONSTRATIVA */
+
+function moveCharacter(amount, reset = false) {
+  const story = activeStory();
+  if (!story) return;
+
+  let position = story.position ?? state.scenePosition ?? 50;
+
+  if (reset) {
+    position = 50;
+  } else {
+    position += amount;
+  }
+
+  position = Math.max(12, Math.min(88, position));
+
+  story.position = position;
+  state.scenePosition = position;
+
+  const figure = document.getElementById("figure");
+  figure.style.left = position + "%";
+
+  figure.classList.remove("walking");
+  void figure.offsetWidth;
+  figure.classList.add("walking");
+
+  persist();
+
+  setTimeout(() => figure.classList.remove("walking"), 450);
+}
+
+/* MISSÕES */
+
+const missions = [
+  {
+    id: "welcome",
+    title: "Primeiros passos",
+    description: "Visite a central de missões e conheça suas recompensas.",
+    reward: 15,
+    action: "Resgatar recompensa"
+  },
+  {
+    id: "story",
+    title: "Uma nova aventura",
+    description: "Comece uma história e escolha uma opção de diálogo.",
+    reward: 25,
+    action: "Resgatar recompensa"
+  },
+  {
+    id: "creator",
+    title: "Apoie a criadora",
+    description: "Conheça o canal da criadora. Configure o link verdadeiro antes de publicar.",
+    reward: 20,
+    action: "Abrir perfil"
+  },
+  {
+    id: "community",
+    title: "Conheça a comunidade",
+    description: "Visite o perfil social oficial do jogo.",
+    reward: 20,
+    action: "Abrir perfil"
+  },
+  {
+    id: "video",
+    title: "Vídeo recompensado",
+    description: "Demonstração do fluxo de anúncio recompensado.",
+    reward: 10,
+    action: "Testar recompensa"
+  }
+];
+
+/*
+  Troque os links de exemplo pelos seus perfis oficiais.
+  O protótipo não verifica visitas e não reproduz anúncios.
+*/
+
+const socialLinks = {
+  creator: "",
+  community: ""
+};
+
+function renderMissions() {
+  const grid = document.getElementById("missionGrid");
+
+  grid.innerHTML = missions.map(mission => {
+    const claimed = state.missionsClaimed.includes(mission.id);
+
+    return `
+      <article class="card task">
+        <div class="character-avatar">✨</div>
+        <h3>${escapeHTML(mission.title)}</h3>
+        <p class="small">${escapeHTML(mission.description)}</p>
+        <p>💎 Recompensa: ${mission.reward}</p>
+        <button class="${claimed ? "secondary" : "primary"}"
+          ${claimed ? "disabled" : ""}
+          onclick="handleMission('${mission.id}')">
+          ${claimed ? "✓ Concluída" : escapeHTML(mission.action)}
+        </button>
+      </article>
+    `;
+  }).join("");
+}
+
+function handleMission(id) {
+  const mission = missions.find(m => m.id === id);
+  if (!mission) return;
+
+  if (state.missionsClaimed.includes(id)) {
+    alert("Esta missão já foi concluída.");
+    return;
+  }
+
+  if (id === "creator" || id === "community") {
+    const url = socialLinks[id];
+
+    if (!url) {
+      alert("Configure o link oficial desta missão no código antes de publicar.");
+      return;
+    }
+
+    /*
+      A abertura de um link não comprova que a pessoa o visitou.
+      Para recompensas reais, use validação no servidor.
+    */
+    window.open(url, "_blank", "noopener,noreferrer");
+
+    if (!confirm("Esta é uma recompensa demonstrativa. Deseja testar o resgate?")) {
+      return;
+    }
+  }
+
+  if (id === "video") {
+    if (!confirm("Simular o término de um anúncio recompensado? Nenhum anúncio real será exibido.")) {
+      return;
+    }
+  }
+
+  if (id === "story") {
+    const hasProgress = state.stories.some(s =>
+      s.id === "main" && s.scene > 0
+    );
+
+    if (!hasProgress) {
+      alert("Jogue uma cena primeiro para concluir este desafio.");
+      return;
+    }
+  }
+
+  state.gems += mission.reward;
+  state.missionsClaimed.push(id);
+
+  persist();
+  renderMissions();
+
+  alert("Você ganhou " + mission.reward + " gemas de demonstração! 💎");
+}
+
+/* BIBLIOTECA DE HISTÓRIAS */
+
+function createStory() {
+  const nameInput = document.getElementById("storyName");
+  const descriptionInput = document.getElementById("storyDescription");
+
+  const name = nameInput.value.trim();
+  const description = descriptionInput.value.trim();
+
+  if (!name) {
+    alert("Digite um nome para sua história.");
+    nameInput.focus();
+    return;
+  }
+
+  if (state.stories.length >= 30) {
+    alert("Limite demonstrativo de 30 histórias atingido.");
+    return;
+  }
+
+  const id = "custom_" + Date.now() + "_" +
+    Math.random().toString(36).slice(2, 7);
+
+  state.stories.push({
+    id,
+    name,
+    description: description || "Uma nova aventura começa aqui.",
+    type: "custom",
+    scene: 0,
+    affinity: 10,
+    position: 50
+  });
+
+  state.currentStoryId = id;
+  state.scene = 0;
+  state.affinity = 10;
+
+  nameInput.value = "";
+  descriptionInput.value = "";
+
+  persist();
+  renderLibrary();
+  showTab("game");
+}
+
+function renderLibrary() {
+  const grid = document.getElementById("storyLibrary");
+
+  grid.innerHTML = state.stories.map(story => `
+    <article class="card">
+      <div class="character-avatar">📖</div>
+      <h3>${escapeHTML(story.name)}</h3>
+      <p class="small">${escapeHTML(story.description)}</p>
+      <p class="small">
+        ${story.type === "custom" ? "História criada por você" : "História principal"}
+      </p>
+      <p class="small">Cena: ${(story.scene || 0) + 1}</p>
+      <div class="button-row">
+        <button class="primary" onclick="openStory('${story.id}')">
+          Continuar
+        </button>
+        ${story.type === "custom" ? `
+          <button class="danger" onclick="deleteStory('${story.id}')">
+            Excluir
+          </button>
+        ` : ""}
+      </div>
+    </article>
+  `).join("");
+}
+
+function openStory(id) {
+  const story = state.stories.find(s => s.id === id);
+  if (!story) return;
+
+  state.currentStoryId = id;
+  state.scene = story.scene || 0;
+  state.affinity = story.affinity || 10;
+  state.scenePosition = story.position ?? 50;
+
+  persist();
+  showTab("game");
+}
+
+function deleteStory(id) {
+  const story = state.stories.find(s => s.id === id);
+
+  if (!story || story.type !== "custom") return;
+
+  if (!confirm('Excluir a história "' + story.name + '"?')) return;
+
+  state.stories = state.stories.filter(s => s.id !== id);
+
+  if (state.currentStoryId === id) {
+    state.currentStoryId = "main";
+  }
+
+  persist();
+  renderLibrary();
+}
+
+/*
+  Nesta demonstração, histórias criadas pelo usuário guardam
+  nome e descrição. Um editor de cenas completo pode ser adicionado
+  numa versão futura.
+*/
+
+function renderCustomScene(story) {
+  document.getElementById("sceneTitle").textContent = story.name;
+  document.getElementById("speaker").textContent = selectedCharacter().name;
+  document.getElementById("dialogue").textContent =
+    story.description || "Sua aventura começa agora.";
+
+  document.getElementById("choices").innerHTML = `
+    <button class="choice" onclick="advanceCustomStory()">
+      Continuar minha história →
+    </button>
+    <button class="choice" onclick="customStoryNote()">
+      ✍️ Editar minha ideia
+    </button>
+  `;
+
+  updateCounters();
+}
+
+function advanceCustomStory() {
+  const story = activeStory();
+  if (!story || story.type !== "custom") return;
+
+  story.scene = (story.scene || 0) + 1;
+
+  document.getElementById("speaker").textContent = "Narradora";
+  document.getElementById("dialogue").textContent =
+    "Cena " + (story.scene + 1) +
+    ": imagine o próximo acontecimento e desenvolva sua aventura.";
+
+  persist();
+  renderCustomScene(story);
+}
+
+function customStoryNote() {
+  const story = activeStory();
+  if (!story || story.type !== "custom") return;
+
+  const description = prompt(
+    "Escreva a descrição da sua história:",
+    story.description
+  );
+
+  if (description === null) return;
+
+  story.description = description.slice(0, 500);
+
+  persist();
+  renderScene();
+}
+
+/* LOJA DE GEMAS */
+
+function buyItem(id, cost) {
+  if (state.unlocked.includes(id)) {
+    alert("Você já desbloqueou este item!");
+    return;
+  }
+
+  if (state.gems < cost) {
+    alert("Gemas insuficientes! Complete as missões.");
+    showTab("missions");
+    return;
+  }
+
+  if (!confirm("Comprar este item por " + cost + " gemas?")) return;
+
+  state.gems -= cost;
+  state.unlocked.push(id);
+
+  persist();
+
+  alert("Item desbloqueado! 💗");
+}
+
+function demoGems(amount) {
+  if (!confirm("Adicionar " + amount +
+    " gemas fictícias? Isso não envolve pagamento real.")) {
+    return;
+  }
+
+  state.gems += amount;
+  persist();
+
+  alert("Gemas de demonstração adicionadas!");
+}
+
+/* INICIALIZAÇÃO */
+
+function init() {
+  if (!state.stories.some(s => s.id === state.currentStoryId)) {
+    state.currentStoryId = state.stories[0].id;
+  }
+
+  updateCounters();
+  updateHomeProgress();
+  renderCharacters();
+  renderMissions();
+  renderLibrary();
+  renderScene();
+
+  /*
+    Salvamento automático quando há mudanças de visibilidade
+    e ao sair da página, quando o navegador permite.
+  */
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") persist();
+  });
+
+  window.addEventListener("pagehide", persist);
+}
+
+init();
+</script>
+
+</body>
+  </html>
